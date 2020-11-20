@@ -1,10 +1,10 @@
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as mongoose from 'mongoose';
+import * as cors from 'cors';
 import graphRoutes from './routes/graph';
 
 const app = express();
-
 
 //#region database configuration
 
@@ -23,7 +23,10 @@ db.on('error', err => {
 //#endregion
 
 //#region api configuration
-app.use(bodyParser.urlencoded({ extended: true }))
+
+
+app.use(cors());
+app.use(express.json())
 app.use('/graph', graphRoutes);
 
 app.listen(3000, () => {

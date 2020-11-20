@@ -1,8 +1,10 @@
 import * as express from "express";
+
 const router = express.Router();
 
-router.get('/', function(req, res) {
-    res.json({ message: 'graph route!' });  
+router.post('/', function(req, res) {
+    console.log(req.body.elements)
+    res.json({ message: req.body });
   });
 
 export default router;
