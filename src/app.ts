@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as mongoose from 'mongoose';
 import * as cors from 'cors';
-import graphRoutes from './routes/graph';
+import graphRoutes from './routes/graph-routes';
 
 const app = express();
 
