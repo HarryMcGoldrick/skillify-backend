@@ -1,4 +1,4 @@
-import { graphSchema } from "../schemas/graph-schemas"; 
+import { graphSchema } from '../schemas/graph-schema';
 import { model, Schema } from 'mongoose';
 
 const graphModel = model('Graph', graphSchema);
