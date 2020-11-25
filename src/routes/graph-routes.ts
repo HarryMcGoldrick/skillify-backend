@@ -1,9 +1,18 @@
 import { Router } from 'express';
-import { getGraphFromDatabase, saveGraphToDatabase, updateGraphInDatabase } from '../controllers/graph-controller';
+import { getGraphFromDatabase, saveGraphToDatabase, updateGraphInDatabase, getGraphIdsFromDatabase } from '../controllers/graph-controller';
 import { body, param, validationResult } from 'express-validator';
 import { authenticateToken } from '../utils/authentication';
 
 const router = Router();
+
+
+router.get('/ids', async (req, res) => {
+  const graphs = await getGraphIdsFromDatabase();
+  const graphIds = graphs.map((graph) => {
+    return graph.id
+  })
+  res.json(graphIds);
+});
 
 router.post('/', [body('nodes').exists(), body('edges').exists()], (req, res) => {
     const errors = validationResult(req);

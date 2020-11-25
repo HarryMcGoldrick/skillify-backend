@@ -15,6 +15,10 @@ export const getGraphFromDatabase = async (id: string) => {
    return await graphModel.findById(id).exec();
 }
 
+export const getGraphIdsFromDatabase = async () => {
+    return await graphModel.find({}).exec();
+}
+
 export const updateGraphInDatabase = async (id: string, body: any): Promise<any> => {
     return await graphModel.replaceOne({_id: new ObjectId(id)}, { edges: body.edges, nodes: body.nodes})
 }
