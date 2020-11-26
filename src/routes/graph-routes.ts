@@ -1,25 +1,26 @@
 import { Router } from 'express';
-import { getGraphFromDatabase, saveGraphToDatabase, updateGraphInDatabase, getGraphIdsFromDatabase } from '../controllers/graph-controller';
+import { getGraphFromDatabase, createNewGraph, updateGraphInDatabase, getGraphViewsFromDatabase } from '../controllers/graph-controller';
 import { body, param, validationResult } from 'express-validator';
 import { authenticateToken } from '../utils/authentication';
 
 const router = Router();
 
 
-router.get('/ids', async (req, res) => {
-  const graphs = await getGraphIdsFromDatabase();
-  const graphIds = graphs.map((graph) => {
-    return graph.id
+router.get('/views', async (req, res) => {
+  const graphs = await getGraphViewsFromDatabase();
+  const graphIds = graphs.map((graph: any) => {
+    const {id, name } = graph
+    return { id, name }
   })
   res.json(graphIds);
 });
 
-router.post('/', [body('nodes').exists(), body('edges').exists()], (req, res) => {
+router.post('/', [body('name').exists()], (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const id = saveGraphToDatabase(req.body);
+    const id = createNewGraph(req.body.name);
     res.json({ graphId: id });
     res.status(200)
   });
