@@ -1,5 +1,5 @@
 import { graphSchema } from '../schemas/graph-schema';
-import { model, Schema } from 'mongoose';
+import { model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 
 const graphModel = model('Graph', graphSchema);
