@@ -1,9 +1,10 @@
 import { Schema } from 'mongoose';
 
-const nodeSchema = new Schema({
+export const nodeSchema = new Schema({
     data: {
         id: String,
-        label: String
+        label: String,
+        completed: Boolean
     },
     position: {
         x: Number,

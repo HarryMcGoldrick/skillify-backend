@@ -39,7 +39,7 @@ router.post('/login', [body('username').exists(), body('password').exists()], (r
             res.json({ error: "cannot find user"});
             res.status(400)
         } else {
-            const token = generateJWT(username).toString()
+            const token = generateJWT(user._id).toString()
             res.json({ token });
             res.status(200)
         }
