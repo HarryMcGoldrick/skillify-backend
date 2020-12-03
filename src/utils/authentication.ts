@@ -1,10 +1,10 @@
 import { sign, verify } from 'jsonwebtoken';
 
 // Create a JWT token using the secret in the .env config
-export const generateJWT = (username) => {
+export const generateJWT = (userId: string) => {
     // Token expires in 6 hours
     const exp = Math.floor(Date.now() / 1000) + (60 * 60) * 6;
-    return sign({username, exp }, process.env.TOKEN_SECRET);
+    return sign({userId, exp }, process.env.TOKEN_SECRET);
 }
 
 // Check the request header and authenticate the token attached
