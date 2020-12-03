@@ -16,7 +16,7 @@ router.get('/views', async (req, res) => {
   res.json(graphIds);
 });
 
-router.post('/', [body('name').exists()], (req, res) => {
+router.post('/', [body('name').exists(), authenticateToken], (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -26,7 +26,7 @@ router.post('/', [body('name').exists()], (req, res) => {
     res.status(200)
   });
 
-router.post('/create',  async (req, res) => {
+router.post('/create', authenticateToken, async (req, res) => {
   const { graphId, userId } = req.body;
   const response = await addGraphToUserCreated(graphId, userId);
   if (response) {
@@ -38,7 +38,7 @@ router.post('/create',  async (req, res) => {
   }
 })
 
-router.post('/:id/progress',  async (req, res) => {
+router.post('/:id/progress', authenticateToken, async (req, res) => {
   const { id: graphId } = req.params 
   const { userId } = req.body;
   const response = await addGraphToUserProgress(graphId, userId);
@@ -51,7 +51,7 @@ router.post('/:id/progress',  async (req, res) => {
   }
 })
 
-router.post('/:id/progress/node',  async (req, res) => {
+router.post('/:id/progress/node', authenticateToken, async (req, res) => {
   const { graphId, userId, nodeId } = req.body;
   const response = await addNodeToUserProgress(userId, graphId, nodeId);
   if (response) {
@@ -69,7 +69,7 @@ router.get('/:id', [param('id').isAlphanumeric()], async (req, res) => {
   res.status(200)
 })
 
-router.post('/:id', [param('id').isAlphanumeric(), body('nodes').exists(), body('edges').exists()], async (req, res) => {
+router.post('/:id', [param('id').isAlphanumeric(), body('nodes').exists(), body('edges').exists(), authenticateToken], async (req, res) => {
   const response = await updateGraphInDatabase(req.params.id, req.body);
   res.json({ res: response });
   res.status(200)
