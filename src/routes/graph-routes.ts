@@ -16,12 +16,12 @@ router.get('/views', async (req, res) => {
   res.json(graphIds);
 });
 
-router.post('/', [body('name').exists(), authenticateToken], (req, res) => {
+router.post('/', [body('name').exists(), body('description').exists(), authenticateToken], (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const id = createNewGraph(req.body.name);
+  const id = createNewGraph(req.body.name, req.body.description);
   res.json({ graphId: id });
   res.status(200)
 });

@@ -5,8 +5,8 @@ import { ObjectId } from 'mongodb';
 const graphModel = model('Graph', graphSchema);
 
 
-export const createNewGraph = (name: string): string => {
-    const graphInstance = new graphModel({name});
+export const createNewGraph = (name: string, description: string): string => {
+    const graphInstance = new graphModel({name, description});
     graphInstance.save()
     return graphInstance._id.toString();
 }
