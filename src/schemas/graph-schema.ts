@@ -4,6 +4,7 @@ export const nodeSchema = new Schema({
     data: {
         id: String,
         label: String,
+        description: String,
         completed: Boolean
     },
     position: {
