@@ -38,9 +38,9 @@ router.post('/create', authenticateToken, async (req, res) => {
   }
 })
 
-router.post('/:id/progress', authenticateToken, async (req, res) => {
-  const { id: graphId } = req.params
-  const { userId } = req.body;
+//TODO add validation to prevent same graph being added twice
+router.post('/progress', authenticateToken, async (req, res) => {
+  const { graphId, userId } = req.body;
   const response = await addGraphToUserProgress(graphId, userId);
   if (response) {
     res.json({ res: true });
@@ -51,7 +51,7 @@ router.post('/:id/progress', authenticateToken, async (req, res) => {
   }
 })
 
-router.post('/:id/progress/node', authenticateToken, async (req, res) => {
+router.post('/progress/node', authenticateToken, async (req, res) => {
   const { graphId, userId, nodeId } = req.body;
   const response = await addNodeToUserProgress(userId, graphId, nodeId);
   if (response) {

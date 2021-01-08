@@ -63,4 +63,18 @@ router.get('/:id/userinfo', (req, res) => {
 
 });
 
+router.get('/:id/progress', (req, res) => {
+    const { id: userId } = req.params
+
+    getUserInfoFromDatabase(userId).then((user => {
+        if (!user) {
+            res.json({ error: "cannot find user" });
+            res.status(400)
+        } else {
+            res.json({ graphs_progressing: user.graphs_progressing });
+            res.status(200)
+        }
+    }))
+})
+
 export default router;
