@@ -10,33 +10,23 @@ const router = Router();
 router.get('/views', async (req, res) => {
   const graphs = await getGraphViewsFromDatabase();
   const graphIds = graphs.map((graph: any) => {
-    const { id, name } = graph
-    return { id, name }
+    const { id, name, description, createdById, image } = graph
+    return { id, name, description, createdById, image }
   })
   res.json(graphIds);
 });
 
-router.post('/', [body('name').exists(), body('description').exists(), authenticateToken], (req, res) => {
+router.post('/create', [body('name').exists(), body('description').exists(), body('userId').exists(), authenticateToken], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const id = createNewGraph(req.body.name, req.body.description);
-  res.json({ graphId: id });
+  const { userId, name, description } = req.body;
+  const graphId = createNewGraph(req.body.name, req.body.description, userId);
+  await addGraphToUserCreated(graphId, userId);
+  res.json({ graphId });
   res.status(200)
 });
-
-router.post('/create', authenticateToken, async (req, res) => {
-  const { graphId, userId } = req.body;
-  const response = await addGraphToUserCreated(graphId, userId);
-  if (response) {
-    res.json({ res: true });
-    res.status(200)
-  } else {
-    res.json({ res: false });
-    res.status(400)
-  }
-})
 
 //TODO add validation to prevent same graph being added twice
 router.post('/progress', authenticateToken, async (req, res) => {

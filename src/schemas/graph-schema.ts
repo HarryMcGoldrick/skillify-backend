@@ -28,6 +28,8 @@ const edgeSchema = new Schema({
 export const graphSchema = new Schema({
     name: String,
     description: String,
+    createdById: String,
+    image: String,
     nodes: [nodeSchema],
     edges: [edgeSchema]
 })

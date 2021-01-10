@@ -56,7 +56,7 @@ router.get('/:id/userinfo', (req, res) => {
             res.json({ error: "cannot find user" });
             res.status(400)
         } else {
-            res.json({ username: user.username });
+            res.json({ username: user.username, graphs_created: user.graphs_created });
             res.status(200)
         }
     })
