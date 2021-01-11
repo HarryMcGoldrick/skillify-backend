@@ -38,6 +38,14 @@ export const addNodeToUserProgress = async (userId: string, graphId: string, nod
     return userModel.updateOne({ _id: new ObjectId(userId), 'graphs_progressing._id': new ObjectId(graphId) }, { $push: { 'graphs_progressing.$.completedNodes': nodeId } })
 }
 
+export const removeGraphFromUserProgress = async (graphId: string, userId: string): Promise<any> => {
+    return userModel.findByIdAndUpdate({ _id: new ObjectId(userId) }, { $pull: { graphs_progressing: { _id: new ObjectId(graphId) } } });
+}
+
+export const removeNodeFromUserProgress = async (userId: string, graphId: string, nodeId: string): Promise<any> => {
+    return userModel.updateOne({ _id: new ObjectId(userId), 'graphs_progressing._id': new ObjectId(graphId) }, { $pull: { 'graphs_progressing.$.completedNodes': nodeId } })
+}
+
 export const getUserInfoFromDatabase = async (userId: string): Promise<any> => {
     return userModel.findById(new ObjectId(userId));
 }

@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { getGraphFromDatabase, createNewGraph, updateGraphInDatabase, getGraphViewsFromDatabase } from '../controllers/graph-controller';
+import { getGraphFromDatabase, createNewGraph, updateGraphInDatabase, getGraphViewsFromDatabase, createImageFromGraphData } from '../controllers/graph-controller';
 import { body, param, validationResult } from 'express-validator';
 import { authenticateToken } from '../utils/authentication';
-import { addGraphToUserCreated, addGraphToUserProgress, addNodeToUserProgress, getUserFromDatabase } from '../controllers/user-controller';
+import { addGraphToUserCreated, addGraphToUserProgress, addNodeToUserProgress, getUserFromDatabase, removeGraphFromUserProgress, removeNodeFromUserProgress } from '../controllers/user-controller';
 
 const router = Router();
 
@@ -41,9 +41,33 @@ router.post('/progress', authenticateToken, async (req, res) => {
   }
 })
 
+router.post('/progress/remove', authenticateToken, async (req, res) => {
+  const { graphId, userId } = req.body;
+  const response = await removeGraphFromUserProgress(graphId, userId);
+  if (response) {
+    res.json({ res: true });
+    res.status(200)
+  } else {
+    res.json({ res: false });
+    res.status(400)
+  }
+})
+
 router.post('/progress/node', authenticateToken, async (req, res) => {
   const { graphId, userId, nodeId } = req.body;
   const response = await addNodeToUserProgress(userId, graphId, nodeId);
+  if (response) {
+    res.json({ res: true });
+    res.status(200)
+  } else {
+    res.json({ res: false });
+    res.status(400)
+  }
+})
+
+router.post('/progress/node/remove', authenticateToken, async (req, res) => {
+  const { graphId, userId, nodeId } = req.body;
+  const response = await removeNodeFromUserProgress(userId, graphId, nodeId);
   if (response) {
     res.json({ res: true });
     res.status(200)
@@ -67,6 +91,12 @@ router.post('/:id', [param('id').isAlphanumeric(), authenticateToken], async (re
     req.body.edges = [];
   }
   const response = await updateGraphInDatabase(req.params.id, req.body);
+  res.json({ res: response });
+  res.status(200)
+})
+
+router.post('/:id/image', [param('id').isAlphanumeric(), authenticateToken], async (req, res) => {
+  const response = createImageFromGraphData(req.params.id, req.body.elements);
   res.json({ res: response });
   res.status(200)
 })
