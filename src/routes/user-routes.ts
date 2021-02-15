@@ -2,7 +2,8 @@ import { generateJWT } from '../utils/authentication';
 import { Router } from 'express'
 import { body, validationResult } from 'express-validator';
 import { isIfStatement } from 'typescript';
-import { getHashedPassword, getUserFromDatabase, getUserInfoFromDatabase, hasExistingUsername, saveUserToDatabase } from '../controllers/user-controller';
+import { getHashedPassword, getUserFromDatabase, getUserGraphProgressionFromDatabase, getUserInfoFromDatabase, hasExistingUsername, saveUserToDatabase } from '../controllers/user-controller';
+import { graphs_progressing } from '@/schemas/user-schema';
 
 const router = Router();
 
@@ -63,15 +64,20 @@ router.get('/:id/userinfo', (req, res) => {
 
 });
 
-router.get('/:id/progress', (req, res) => {
-    const { id: userId } = req.params
+router.post('/progress', (req, res) => {
+    const { userId, graphId } = req.body;
 
-    getUserInfoFromDatabase(userId).then((user => {
+    getUserGraphProgressionFromDatabase(userId, graphId).then((user => {
         if (!user) {
             res.json({ error: "cannot find user" });
             res.status(400)
         } else {
-            res.json({ graphs_progressing: user.graphs_progressing });
+            const completedNodes = user.graphs_progressing.map(graph => {
+                if (graph._id.toString() === graphId) {
+                    return graph.completedNodes
+                }
+            })[0]
+            res.json({completedNodes});
             res.status(200)
         }
     }))

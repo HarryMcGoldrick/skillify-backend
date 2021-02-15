@@ -49,3 +49,7 @@ export const removeNodeFromUserProgress = async (userId: string, graphId: string
 export const getUserInfoFromDatabase = async (userId: string): Promise<any> => {
     return userModel.findById(new ObjectId(userId));
 }
+
+export const getUserGraphProgressionFromDatabase = async (userId: string, graphId: string): Promise<any> => {
+    return userModel.findById({ _id: new ObjectId(userId), 'graphs_progressing._id': new ObjectId(graphId) });
+}
