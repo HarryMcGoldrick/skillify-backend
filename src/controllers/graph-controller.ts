@@ -50,3 +50,4 @@ export const createImageFromGraphData = (id: string, elements: any) => {
         return graphModel.updateOne({ _id: new ObjectId(id) }, { image: img })
     });
 }
+

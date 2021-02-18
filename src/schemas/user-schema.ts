@@ -1,10 +1,22 @@
-import { Hash } from 'crypto';
 import { ObjectId } from 'mongodb';
 import { Schema } from 'mongoose';
 
+const taskItem = new Schema({
+    label: String,
+    checked: Boolean,
+    id: Number,
+})
+
+export const nodeObjective = new Schema({
+    nodeId: String,
+    items: [taskItem]
+})
+
+//ToDo change casing to pascal
 export const graphs_progressing = new Schema({
     graphId: ObjectId,
-    completedNodes: [String]
+    completedNodes: [String],
+    nodeObjectives: [nodeObjective]
 })
 
 export const userSchema = new Schema({

@@ -1,9 +1,8 @@
 import { generateJWT } from '../utils/authentication';
 import { Router } from 'express'
 import { body, validationResult } from 'express-validator';
-import { isIfStatement } from 'typescript';
-import { getHashedPassword, getUserFromDatabase, getUserGraphProgressionFromDatabase, getUserInfoFromDatabase, hasExistingUsername, saveUserToDatabase } from '../controllers/user-controller';
-import { graphs_progressing } from '@/schemas/user-schema';
+import { addNodeObjectives, getHashedPassword, getUserFromDatabase, getUserGraphProgressionFromDatabase, getUserInfoFromDatabase, hasExistingNodeObjectives, hasExistingUsername, saveUserToDatabase, updateNodeObjectives, getNodeObjectives} from '../controllers/user-controller';
+import { nodeObjective } from '@/schemas/user-schema';
 
 const router = Router();
 
@@ -79,6 +78,58 @@ router.post('/progress', (req, res) => {
             })[0]
             res.json({completedNodes});
             res.status(200)
+        }
+    }))
+})
+
+router.get('/objectives/:graphId/:userId/:nodeId', (req, res) => {
+    const {userId, graphId, nodeId} = req.params;
+
+    getNodeObjectives(userId, graphId, nodeId).then((user) => {
+        if (!user) {
+            res.json({ error: "cannot find objectives" });
+            res.status(400);
+        } else {
+            const graph = user.graphs_progressing.map(obj => {
+                if (obj._id.toString() === graphId) {
+                    return obj;
+                } 
+            });
+            const nodeObjectives = graph.map(items => {
+                return items.nodeObjectives.filter(obj => {
+                    if (obj.nodeId.toString() === nodeId) {
+                        return obj;
+                    }
+                })
+            })[0]
+            res.json({objectives: nodeObjectives});
+            res.status(200);
+        }
+    })
+})
+
+router.post('/objectives', (req, res) => {
+    const {userId, graphId, nodeObjectives} = req.body;
+
+    const { nodeId } = nodeObjectives;
+
+    hasExistingNodeObjectives(userId, graphId, nodeId).then((exists => {
+        if (!exists) {
+            addNodeObjectives(userId, graphId, nodeObjectives).then((updated) => {
+                res.json({ updated, type: 'add' });
+                res.status(200)
+            }).catch((e) => {
+                res.json({error: e}),
+                res.status(400)
+            })
+        } else {
+            updateNodeObjectives(userId, graphId, nodeId, nodeObjectives).then((updated) => {
+                res.json({ updated, type: 'update' });
+                res.status(200)
+            }).catch((e) => {
+                res.json({error: e}),
+                res.status(400)
+            })
         }
     }))
 })
