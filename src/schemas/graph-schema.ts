@@ -10,7 +10,7 @@ export const nodeSchema = new Schema({
     position: {
         x: Number,
         y: Number
-    }
+    },
 })
 
 const edgeSchema = new Schema({
@@ -25,11 +25,17 @@ const edgeSchema = new Schema({
     }
 })
 
+const style = new Schema({
+    selector: String,
+    style: Schema.Types.Mixed
+})
+
 export const graphSchema = new Schema({
     name: String,
     description: String,
     createdById: String,
     image: String,
     nodes: [nodeSchema],
-    edges: [edgeSchema]
+    edges: [edgeSchema],
+    styleSheet: [style],
 })

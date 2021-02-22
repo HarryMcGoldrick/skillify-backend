@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getGraphFromDatabase, createNewGraph, updateGraphInDatabase, getGraphViewsFromDatabase, createImageFromGraphData } from '../controllers/graph-controller';
+import { getGraphFromDatabase, createNewGraph, updateGraphInDatabase, getGraphViewsFromDatabase, createImageFromGraphData, updateGraphStyleSheetInDatabase } from '../controllers/graph-controller';
 import { body, param, validationResult } from 'express-validator';
 import { authenticateToken } from '../utils/authentication';
 import { addGraphToUserCreated, addGraphToUserProgress, addNodeToUserProgress, getUserFromDatabase, removeGraphFromUserProgress, removeNodeFromUserProgress } from '../controllers/user-controller';
@@ -78,8 +78,15 @@ router.post('/progress/node/remove', authenticateToken, async (req, res) => {
 })
 
 router.get('/:id', [param('id').isAlphanumeric()], async (req, res) => {
-  const graph = await getGraphFromDatabase(req.params.id);
-  res.json({ graph });
+  const graph: any = await getGraphFromDatabase(req.params.id);
+  const {name, description, nodes, edges } = graph;
+  const dataToReturn = {
+    name,
+    nodes,
+    description,
+    edges,
+  }
+  res.json({ graph: dataToReturn });
   res.status(200)
 })
 
@@ -92,6 +99,19 @@ router.post('/:id', [param('id').isAlphanumeric(), authenticateToken], async (re
   }
   const response = await updateGraphInDatabase(req.params.id, req.body);
   res.json({ res: response });
+  res.status(200)
+})
+
+router.post('/:id/style', [param('id').isAlphanumeric(), authenticateToken], async (req, res) => {
+  const { styleSheet } = req.body;
+  const response = await updateGraphStyleSheetInDatabase(req.params.id, styleSheet);
+  res.json({ res: response });
+  res.status(200)
+})
+
+router.get('/:id/style', [param('id').isAlphanumeric(), authenticateToken], async (req, res) => {
+  const response: any = await getGraphFromDatabase(req.params.id);
+  res.json({ styleSheet: response.styleSheet });
   res.status(200)
 })
 

@@ -23,7 +23,11 @@ export const getGraphViewsFromDatabase = async () => {
 }
 
 export const updateGraphInDatabase = async (id: string, body: any): Promise<any> => {
-    return await graphModel.updateOne({ _id: new ObjectId(id) }, { edges: body.edges, nodes: body.nodes, image: body.image })
+    return await graphModel.updateOne({ _id: new ObjectId(id) }, { edges: body.edges, nodes: body.nodes, image: body.image, style: body.style})
+}
+
+export const updateGraphStyleSheetInDatabase = async (id: string, styleSheet: any): Promise<any> => {
+    return await graphModel.updateOne({ _id: new ObjectId(id) }, { styleSheet })
 }
 
 export const overwriteGraphInDatabase = async (id: string, body: any): Promise<any> => {
