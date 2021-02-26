@@ -8,8 +8,8 @@ import * as cytoscape from 'cytoscape';
 const graphModel = model('Graph', graphSchema);
 
 
-export const createNewGraph = (name: string, description: string, createdById: string): string => {
-    const graphInstance = new graphModel({ name, description, createdById });
+export const createNewGraph = (name: string, description: string, createdById: string, tags: string[]): string => {
+    const graphInstance = new graphModel({ name, description, createdById, tags });
     graphInstance.save()
     return graphInstance._id.toString();
 }

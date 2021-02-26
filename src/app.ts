@@ -1,11 +1,13 @@
 import * as express from 'express';
-import * as bodyParser from 'body-parser';
 import * as mongoose from 'mongoose';
 import * as cors from 'cors';
 import { config } from 'dotenv';
 import graphRoutes from './routes/graph-routes';
 import userRoutes from './routes/user-routes';
 import contentRoutes from './routes/content-routes';
+import tagRoutes from './routes/tag-routes';
+import { addManyContentTags } from './controllers/tag-controller';
+import tags from './tags/tags';
 
 config();
 const app = express();
@@ -36,6 +38,14 @@ app.use(express.json())
 app.use('/graph', graphRoutes);
 app.use('/user', userRoutes);
 app.use('/content', contentRoutes);
+app.use('/tag', tagRoutes)
+
+// If tags collection is empty add them from tags.ts
+db.collections.tags.countDocuments((err, count) => {
+  if (count === 0) {
+    addManyContentTags(tags);
+  }
+})
 
 app.listen(3000, () => {
     console.log('listening on 3000!')

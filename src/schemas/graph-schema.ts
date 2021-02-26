@@ -38,4 +38,5 @@ export const graphSchema = new Schema({
     nodes: [nodeSchema],
     edges: [edgeSchema],
     styleSheet: [style],
+    tags: [String],
 })

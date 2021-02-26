@@ -21,8 +21,8 @@ router.post('/create', [body('name').exists(), body('description').exists(), bod
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const { userId, name, description } = req.body;
-  const graphId = createNewGraph(req.body.name, req.body.description, userId);
+  const { userId, name, description, tags } = req.body;
+  const graphId = createNewGraph(name, description, userId, tags);
   await addGraphToUserCreated(graphId, userId);
   res.json({ graphId });
   res.status(200)
