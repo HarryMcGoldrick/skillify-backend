@@ -1,8 +1,11 @@
 import axios from 'axios';
 
 // Returns a singular video matching the searchQuery
-export const youtubeRelatedSearch = async (searchQuery) => {
-    return axios.get(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${searchQuery}&key=${process.env.YT_API_KEY}`).then(({data}) => {
-        return data;
-    });
+export const youtubeRelatedSearch = async (searchQuery: string) => {
+    return axios.get(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${searchQuery}&key=${process.env.GOOGLE_API_KEY}`).then(res => res.data);
+}
+
+export const getYoutubeSnippetFromId = async (videoId: string) => {
+    console.log(videoId);
+    return axios.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${process.env.GOOGLE_API_KEY}`).then(res => res.data);
 }

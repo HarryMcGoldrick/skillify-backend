@@ -1,8 +1,10 @@
 import { generateJWT } from '../utils/authentication';
 import { Router } from 'express'
 import { body, validationResult } from 'express-validator';
-import { addNodeObjectives, getHashedPassword, getUserFromDatabase, getUserGraphProgressionFromDatabase, getUserInfoFromDatabase, hasExistingNodeObjectives, hasExistingUsername, saveUserToDatabase, updateNodeObjectives, getNodeObjectives} from '../controllers/user-controller';
-import { nodeObjective } from '@/schemas/user-schema';
+import { addNodeObjectives, getHashedPassword, getUserFromDatabase, getUserGraphProgressionFromDatabase,
+        getUserInfoFromDatabase, hasExistingNodeObjectives, hasExistingUsername, saveUserToDatabase, 
+        updateNodeObjectives, getNodeObjectives, hasLikedContent, addLikedContent, removeLikedContent } from '../controllers/user-controller';
+import { decerementContentScore, incrementContentScore } from '../controllers/content-controller';
 
 const router = Router();
 
@@ -56,7 +58,7 @@ router.get('/:id/userinfo', (req, res) => {
             res.json({ error: "cannot find user" });
             res.status(400)
         } else {
-            res.json({ username: user.username, graphs_created: user.graphs_created });
+            res.json({ username: user.username, graphs_created: user.graphs_created, likedContent: user.likedContent });
             res.status(200)
         }
     })
@@ -125,6 +127,34 @@ router.post('/objectives', (req, res) => {
         } else {
             updateNodeObjectives(userId, graphId, nodeId, nodeObjectives).then((updated) => {
                 res.json({ updated, type: 'update' });
+                res.status(200)
+            }).catch((e) => {
+                res.json({error: e}),
+                res.status(400)
+            })
+        }
+    }))
+})
+
+router.post('/content', (req, res) => {
+    const { userId, contentId, graphId, nodeId} = req.body;
+    
+    hasLikedContent(userId, contentId).then((exists => {
+        if (!exists) {
+            const inc = incrementContentScore(graphId, nodeId, contentId).then(data => {
+                console.log(data);
+            });
+            addLikedContent(userId, contentId).then((updated) => {
+                res.json({ updated, type: 'add' });
+                res.status(200)
+            }).catch((e) => {
+                res.json({error: e}),
+                res.status(400)
+            })
+        } else {
+            decerementContentScore(graphId, nodeId, contentId);
+            removeLikedContent(userId, contentId).then((updated) => {
+                res.json({ updated, type: 'remove' });
                 res.status(200)
             }).catch((e) => {
                 res.json({error: e}),

@@ -1,11 +1,14 @@
 import { Schema } from 'mongoose';
+import { contentSchema } from './content-schema';
+
 
 export const nodeSchema = new Schema({
     data: {
         id: String,
         label: String,
         description: String,
-        completed: Boolean
+        completed: Boolean,
+        content: [contentSchema]
     },
     position: {
         x: Number,

@@ -34,6 +34,12 @@ export const overwriteGraphInDatabase = async (id: string, body: any): Promise<a
     return await graphModel.replaceOne({ _id: new ObjectId(id) }, { edges: body.edges, nodes: body.nodes })
 }
 
+export const getNodesFromGraph = async (graphId: string, nodeId: string) => {
+    return await graphModel.find({ _id: new ObjectId(graphId), 'nodes.data.id': nodeId }, {'nodes.$': 1});
+}
+
+
+
 export const createImageFromGraphData = (id: string, elements: any) => {
     cytoscape.use(dagre)
     cytosnap.use(['cytoscape-dagre']);

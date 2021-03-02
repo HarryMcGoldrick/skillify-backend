@@ -23,6 +23,7 @@ export const userSchema = new Schema({
     username: String,
     password: String, // Password will be hashed
     graphs_created: Array,
-    graphs_progressing: [graphs_progressing]
+    graphs_progressing: [graphs_progressing],
+    likedContent: [ObjectId]
 })
 

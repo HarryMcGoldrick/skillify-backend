@@ -69,3 +69,15 @@ export const updateNodeObjectives = async (userId: string, graphId: string, node
 export const addNodeObjectives = async (userId: string, graphId: string, nodeObjectives: any): Promise<any> => {
     return userModel.updateOne({ _id: new ObjectId(userId), 'graphs_progressing._id': new ObjectId(graphId)}, { $push: { 'graphs_progressing.$.nodeObjectives': nodeObjectives }})
 }
+
+export const hasLikedContent = async (userId: string, contentId: string): Promise<any> => {
+    return  userModel.exists({ _id: new ObjectId(userId), likedContent: new ObjectId(contentId)})
+}
+
+export const removeLikedContent = async (userId: string, contentId: string): Promise<any> => {
+    return  userModel.updateOne({ _id: new ObjectId(userId), 'likedContent': new ObjectId(contentId)}, { $pull: { 'likedContent': new ObjectId(contentId)}})
+}
+
+export const addLikedContent = async (userId: string, contentId: string): Promise<any> => {
+    return  userModel.updateOne({ _id: new ObjectId(userId)}, { $push: { 'likedContent': new ObjectId(contentId)}})
+}
