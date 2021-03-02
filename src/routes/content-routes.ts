@@ -1,6 +1,5 @@
-import { getNodesFromGraph } from '../controllers/graph-controller';
 import { Router } from 'express';
-import { addContentToNode, getYoutubeVideosRelated, removeContentFromNode } from '../controllers/content-controller';
+import { addContent, getContentForNodeId, getYoutubeVideosRelated, removeContent } from '../controllers/content-controller';
 import { getYoutubeSnippetFromId } from '../services/youtube';
 
 const router = Router();
@@ -20,35 +19,28 @@ router.get('/youtube/:id', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-    const { graphId, nodeId, content}= req.body;
+    const { nodeId, content}= req.body;
 
-    const response: any = await addContentToNode(graphId, nodeId, content);
-
-    res.json({response});
-})
-
-router.delete('/', async (req, res) => {
-    const { graphId, nodeId, contentId}= req.body;
-    const response: any = await removeContentFromNode(graphId, nodeId, contentId);
+    const response: any = await addContent(nodeId, content);
 
     res.json({response});
 })
 
-router.get('/:graphId/:nodeId', async (req, res) => {
-    const { graphId, nodeId } = req.params;
-    let content = [];
-    const response: any = await getNodesFromGraph(graphId, nodeId);
-    const graph = response.pop();
-    if (graph) {
-        graph.nodes.map((node) => {
-            if (node.data.id.toString() === nodeId) {
-                content = node.data.content;
-            }
-        })
-    } else {
+router.delete('/:contentId', async (req, res) => {
+    const { contentId } = req.params;
+    const response: any = await removeContent(contentId);
+
+    res.json({response});
+})
+
+router.get('/:nodeId', async (req, res) => {
+    const { nodeId } = req.params;
+    const response: any = await getContentForNodeId(nodeId);
+    if (!response) {
         res.json({error: 'Content fetch failed'});
+    } else {
+        res.json({ content: response })
     }
-    res.json({ content })
 })
 
 export default router;

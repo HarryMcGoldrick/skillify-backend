@@ -6,6 +6,5 @@ export const youtubeRelatedSearch = async (searchQuery: string) => {
 }
 
 export const getYoutubeSnippetFromId = async (videoId: string) => {
-    console.log(videoId);
     return axios.get(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${process.env.GOOGLE_API_KEY}`).then(res => res.data);
 }

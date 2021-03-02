@@ -97,15 +97,22 @@ router.get('/objectives/:graphId/:userId/:nodeId', (req, res) => {
                     return obj;
                 } 
             });
-            const nodeObjectives = graph.map(items => {
-                return items.nodeObjectives.filter(obj => {
-                    if (obj.nodeId.toString() === nodeId) {
-                        return obj;
-                    }
-                })
-            })[0]
-            res.json({objectives: nodeObjectives});
-            res.status(200);
+            
+
+            if(graph && graph.nodeObjectives) {
+                const nodeObjectives = graph.map(items => {
+                    return items.nodeObjectives.filter(obj => {
+                        if (obj.nodeId.toString() === nodeId) {
+                            return obj;
+                        }
+                    })
+                });
+                res.json({objectives: nodeObjectives[0]});
+                res.status(200);
+            } else {
+                res.json({objectives: []});
+                res.status(200);
+            }
         }
     })
 })
@@ -137,13 +144,11 @@ router.post('/objectives', (req, res) => {
 })
 
 router.post('/content', (req, res) => {
-    const { userId, contentId, graphId, nodeId} = req.body;
+    const { userId, contentId} = req.body;
     
     hasLikedContent(userId, contentId).then((exists => {
         if (!exists) {
-            const inc = incrementContentScore(graphId, nodeId, contentId).then(data => {
-                console.log(data);
-            });
+            incrementContentScore(contentId);
             addLikedContent(userId, contentId).then((updated) => {
                 res.json({ updated, type: 'add' });
                 res.status(200)
@@ -152,7 +157,7 @@ router.post('/content', (req, res) => {
                 res.status(400)
             })
         } else {
-            decerementContentScore(graphId, nodeId, contentId);
+            decerementContentScore(contentId);
             removeLikedContent(userId, contentId).then((updated) => {
                 res.json({ updated, type: 'remove' });
                 res.status(200)

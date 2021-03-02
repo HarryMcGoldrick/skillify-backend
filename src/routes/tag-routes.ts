@@ -24,7 +24,6 @@ router.post('/', async (req, res) => {
 
 router.post('/many', async (req, res) => {
     const { tagArray } = req.body;
-    console.log(tagArray)
     const response = await addManyContentTags(tagArray);
     res.json({ response })
 })

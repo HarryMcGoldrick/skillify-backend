@@ -1,32 +1,32 @@
 import { youtubeRelatedSearch } from '../services/youtube';
-import { graphSchema } from '../schemas/graph-schema';
 import { model } from 'mongoose';
 import { ObjectId } from 'mongodb';
+import { contentSchema } from '../schemas/content-schema';
 
-const graphModel = model('Graph', graphSchema);
+const contentModel = model('Content', contentSchema)
 
 export const getYoutubeVideosRelated = (label) => {
     return youtubeRelatedSearch(label);
 }
 
-export const addContentToNode = async (graphId: string, nodeId: string, content: any) => {
-    return await graphModel.updateOne({ _id: new ObjectId(graphId), 'nodes.data.id': nodeId }, {$push: {'nodes.$.data.content': content}});
+export const addContent = async (nodeId: string, content: any) => {
+    const contentInstance = new contentModel({ nodeId, ...content });
+    contentInstance.save()
+    return contentInstance._id.toString();
 }
 
-export const removeContentFromNode = async (graphId: string, nodeId: string, contentId: string) => {
-    return await graphModel.update({ _id: new ObjectId(graphId), 'nodes.data.id': nodeId }, { $pull: { 'nodes.$.data.content': {_id: new ObjectId(contentId) }} });
+export const removeContent = async (contentId: string) => {
+    return await contentModel.deleteOne({_id: new ObjectId(contentId)});
 }
 
-export const incrementContentScore = async (graphId: string, nodeId: string, contentId: string) => {
-    return await graphModel.updateOne({ _id: new ObjectId(graphId)}, {
-        $inc : {
-          'nodes.$[node_id].content.$[content_id].score' : +1
-        }
-      }, {
-        arrayFilters : [{ 'nodes._id' : nodeId }, { 'content._id' : new ObjectId(contentId) }]
-      });
+export const incrementContentScore = async (contentId: string) => {
+    return await contentModel.updateOne({_id: new ObjectId(contentId)}, {$inc: {score: +1}})
 }
 
-export const decerementContentScore = async (graphId: string, nodeId: string, contentId: string) => {
-    return await graphModel.update({ _id: new ObjectId(graphId), 'nodes.data.id': nodeId }, { $inc: { score: -1} });
+export const decerementContentScore = async (contentId: string) => {
+  return await contentModel.updateOne({_id: new ObjectId(contentId)}, {$inc: {score: -1}})
+}
+
+export const getContentForNodeId = async (nodeId: string) => {
+  return await contentModel.find({nodeId: nodeId});
 }
