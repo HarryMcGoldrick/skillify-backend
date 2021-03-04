@@ -1,4 +1,4 @@
-import { getGoogleBooksVolumeFromId } from '../services/google-books';
+import { getGoogleBooksVolumeFromId, googleBooksRelatedSearch } from '../services/google-books';
 import { Router } from 'express';
 import { addContent, getContentForNodeId, getYoutubeVideosRelated, removeContent } from '../controllers/content-controller';
 import { getYoutubeSnippetFromId } from '../services/youtube';
@@ -7,8 +7,8 @@ const router = Router();
 
 
 router.get('/youtube', async (req, res) => {
-    const { label } = req.query
-    const response = await getYoutubeVideosRelated(label);
+    const { searchQuery } = req.query
+    const response = await getYoutubeVideosRelated(searchQuery);
     res.json({response })
 })
 
@@ -17,6 +17,12 @@ router.get('/youtube/:id', async (req, res) => {
     const response = await getYoutubeSnippetFromId(id);
 
     res.json({response});
+})
+
+router.get('/googlebooks', async (req, res) => {
+    const { searchQuery } = req.query
+    const response = await googleBooksRelatedSearch(searchQuery);
+    res.json({ response })
 })
 
 router.get('/googlebooks/:id', async (req, res) => {
