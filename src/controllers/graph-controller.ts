@@ -18,8 +18,13 @@ export const getGraphFromDatabase = async (id: string) => {
     return await graphModel.findById(id).exec();
 }
 
-export const getGraphViewsFromDatabase = async () => {
-    return await graphModel.find({}).exec();
+export const getGraphViewsFromDatabase = async (name, tags, page, pageSize) => {
+    if (tags.length > 0) {
+        return await graphModel.find({name: new RegExp(name), tags: {$in: [...tags]}}).skip((page-1) * pageSize).limit(pageSize);
+    } else {
+        return await graphModel.find({name: new RegExp(name)}).skip((page-1) * pageSize).limit(pageSize);
+    } 
+
 }
 
 export const updateGraphInDatabase = async (id: string, body: any): Promise<any> => {

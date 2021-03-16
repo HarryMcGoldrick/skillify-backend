@@ -8,12 +8,19 @@ const router = Router();
 
 
 router.get('/views', async (req, res) => {
-  const graphs = await getGraphViewsFromDatabase();
-  const graphIds = graphs.map((graph: any) => {
-    const { id, name, description, createdById, image } = graph
-    return { id, name, description, createdById, image }
+  let {name, tags: tagsQuery, page, pageSize} : any = req.query;
+  if (!tagsQuery) {
+    tagsQuery = [];
+  }
+  const graphs = await getGraphViewsFromDatabase(name, tagsQuery, parseInt(page), parseInt(pageSize));
+
+  // Remove the unnecessary fields
+  const graphViews = graphs.map((graph: any) => {
+    const { id, name, description, createdById, image, tags } = graph
+    return { id, name, description, createdById, image, tags }
   })
-  res.json(graphIds);
+
+  res.json(graphViews);
 });
 
 router.post('/create', [body('name').exists(), body('description').exists(), body('userId').exists(), authenticateToken], async (req, res) => {
