@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getGraphFromDatabase, createNewGraph, updateGraphInDatabase, getGraphViewsFromDatabase, createImageFromGraphData, updateGraphStyleSheetInDatabase } from '../controllers/graph-controller';
+import { getGraphFromDatabase, createNewGraph, updateGraphInDatabase, getGraphViewsFromDatabase, getGraphViewsCount, createImageFromGraphData, updateGraphStyleSheetInDatabase } from '../controllers/graph-controller';
 import { body, param, validationResult } from 'express-validator';
 import { authenticateToken } from '../utils/authentication';
 import { addGraphToUserCreated, addGraphToUserProgress, addNodeToUserProgress, getUserFromDatabase, removeGraphFromUserProgress, removeNodeFromUserProgress } from '../controllers/user-controller';
@@ -13,6 +13,7 @@ router.get('/views', async (req, res) => {
     tagsQuery = [];
   }
   const graphs = await getGraphViewsFromDatabase(name, tagsQuery, parseInt(page), parseInt(pageSize));
+  const graphAmount = await getGraphViewsCount(name, tagsQuery);
 
   // Remove the unnecessary fields
   const graphViews = graphs.map((graph: any) => {
@@ -20,7 +21,7 @@ router.get('/views', async (req, res) => {
     return { id, name, description, createdById, image, tags }
   })
 
-  res.json(graphViews);
+  res.json({graphViews, graphAmount});
 });
 
 router.post('/create', [body('name').exists(), body('description').exists(), body('userId').exists(), authenticateToken], async (req, res) => {

@@ -27,6 +27,15 @@ export const getGraphViewsFromDatabase = async (name, tags, page, pageSize) => {
 
 }
 
+export const getGraphViewsCount = async (name, tags) => {
+    if (tags.length > 0) {
+        return await graphModel.find({name: new RegExp(name), tags: {$in: [...tags]}}).count();
+    } else {
+        return await graphModel.find({name: new RegExp(name)}).count();
+    } 
+
+}
+
 export const updateGraphInDatabase = async (id: string, body: any): Promise<any> => {
     return await graphModel.updateOne({ _id: new ObjectId(id) }, { edges: body.edges, nodes: body.nodes, image: body.image, style: body.style})
 }
