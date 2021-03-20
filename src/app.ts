@@ -6,6 +6,7 @@ import graphRoutes from './routes/graph-routes';
 import userRoutes from './routes/user-routes';
 import contentRoutes from './routes/content-routes';
 import tagRoutes from './routes/tag-routes';
+import objectiveRoutes from './routes/objective-routes';
 import { addManyContentTags } from './controllers/tag-controller';
 import tags from './tags/tags';
 
@@ -39,6 +40,7 @@ app.use('/graph', graphRoutes);
 app.use('/user', userRoutes);
 app.use('/content', contentRoutes);
 app.use('/tag', tagRoutes)
+app.use('/objective', objectiveRoutes)
 
 // If tags collection is empty add them from tags.ts
 db.collections.tags.countDocuments((err, count) => {

@@ -1,7 +1,7 @@
 import { createHash, Hash } from 'crypto';
 import { ObjectId } from 'mongodb';
 import { model } from 'mongoose';
-import { userSchema, nodeObjective } from '../schemas/user-schema';
+import { userSchema } from '../schemas/user-schema';
 
 const userModel = model('User', userSchema);
 
@@ -52,22 +52,6 @@ export const getUserInfoFromDatabase = async (userId: string): Promise<any> => {
 
 export const getUserGraphProgressionFromDatabase = async (userId: string, graphId: string): Promise<any> => {
     return userModel.findById({ _id: new ObjectId(userId), 'graphs_progressing._id': new ObjectId(graphId) });
-}
-
-export const hasExistingNodeObjectives = async (userId: string, graphId: string, nodeId: string): Promise<any> => {
-    return userModel.exists({ _id: new ObjectId(userId), 'graphs_progressing._id': new ObjectId(graphId), 'graphs_progressing.nodeObjectives.nodeId': nodeId })
-}
-
-export const getNodeObjectives = async (userId: string, graphId: string, nodeId: string): Promise<any> => {
-    return userModel.findById({ _id: new ObjectId(userId), 'graphs_progressing._id': new ObjectId(graphId), 'graphs_progressing.nodeObjectives.nodeId': nodeId })
-}
-
-export const updateNodeObjectives = async (userId: string, graphId: string, nodeId: string, nodeObjectives: any): Promise<any> => {
-    return userModel.updateOne({ _id: new ObjectId(userId), 'graphs_progressing._id': new ObjectId(graphId), 'graphs_progressing.nodeObjectives.nodeId': nodeId }, { $set: { 'graphs_progressing.$.nodeObjectives': nodeObjectives }})
-}
-
-export const addNodeObjectives = async (userId: string, graphId: string, nodeObjectives: any): Promise<any> => {
-    return userModel.updateOne({ _id: new ObjectId(userId), 'graphs_progressing._id': new ObjectId(graphId)}, { $push: { 'graphs_progressing.$.nodeObjectives': nodeObjectives }})
 }
 
 export const hasLikedContent = async (userId: string, contentId: string): Promise<any> => {

@@ -1,9 +1,9 @@
 import { generateJWT } from '../utils/authentication';
 import { Router } from 'express'
 import { body, validationResult } from 'express-validator';
-import { addNodeObjectives, getHashedPassword, getUserFromDatabase, getUserGraphProgressionFromDatabase,
-        getUserInfoFromDatabase, hasExistingNodeObjectives, hasExistingUsername, saveUserToDatabase, 
-        updateNodeObjectives, getNodeObjectives, hasLikedContent, addLikedContent, removeLikedContent } from '../controllers/user-controller';
+import { getHashedPassword, getUserFromDatabase, getUserGraphProgressionFromDatabase,
+        getUserInfoFromDatabase, hasExistingUsername, saveUserToDatabase, 
+         hasLikedContent, addLikedContent, removeLikedContent } from '../controllers/user-controller';
 import { decerementContentScore, incrementContentScore } from '../controllers/content-controller';
 
 const router = Router();
@@ -84,64 +84,6 @@ router.post('/progress', (req, res) => {
     }))
 })
 
-router.get('/objectives/:graphId/:userId/:nodeId', (req, res) => {
-    const {userId, graphId, nodeId} = req.params;
-
-    getNodeObjectives(userId, graphId, nodeId).then((user) => {
-        if (!user) {
-            res.json({ error: "cannot find objectives" });
-            res.status(400);
-        } else {
-            const graph = user.graphs_progressing.map(obj => {
-                if (obj._id.toString() === graphId) {
-                    return obj;
-                } 
-            });
-            
-
-            if(graph && graph.nodeObjectives) {
-                const nodeObjectives = graph.map(items => {
-                    return items.nodeObjectives.filter(obj => {
-                        if (obj.nodeId.toString() === nodeId) {
-                            return obj;
-                        }
-                    })
-                });
-                res.json({objectives: nodeObjectives[0]});
-                res.status(200);
-            } else {
-                res.json({objectives: []});
-                res.status(200);
-            }
-        }
-    })
-})
-
-router.post('/objectives', (req, res) => {
-    const {userId, graphId, nodeObjectives} = req.body;
-
-    const { nodeId } = nodeObjectives;
-
-    hasExistingNodeObjectives(userId, graphId, nodeId).then((exists => {
-        if (!exists) {
-            addNodeObjectives(userId, graphId, nodeObjectives).then((updated) => {
-                res.json({ updated, type: 'add' });
-                res.status(200)
-            }).catch((e) => {
-                res.json({error: e}),
-                res.status(400)
-            })
-        } else {
-            updateNodeObjectives(userId, graphId, nodeId, nodeObjectives).then((updated) => {
-                res.json({ updated, type: 'update' });
-                res.status(200)
-            }).catch((e) => {
-                res.json({error: e}),
-                res.status(400)
-            })
-        }
-    }))
-})
 
 router.post('/content', (req, res) => {
     const { userId, contentId} = req.body;
