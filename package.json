@@ -1,6 +1,7 @@
 {
   "name": "project-api",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "main": "src/app.ts",
   "scripts": {
@@ -22,7 +23,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.3",
     "mongoose": "^5.10.15",
-    "ts-node": "^9.0.0"
+    "ts-node": "^9.1.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.8",

@@ -8,7 +8,8 @@ import contentRoutes from './routes/content-routes';
 import tagRoutes from './routes/tag-routes';
 import objectiveRoutes from './routes/objective-routes';
 import { addManyContentTags } from './controllers/tag-controller';
-import tags from './tags/tags';
+import tags from './enums/tags';
+import achievements from './enums/achievements';
 
 config();
 const app = express();
@@ -42,12 +43,18 @@ app.use('/content', contentRoutes);
 app.use('/tag', tagRoutes)
 app.use('/objective', objectiveRoutes)
 
-// If tags collection is empty add them from tags.ts
+// If tags collection does not match tags enum then add them
 db.collections.tags.countDocuments((err, count) => {
-  if (count === 0) {
+  if (count === tags.length) {
     addManyContentTags(tags);
   }
 })
+
+// db.collections.rewards.countDocuments((err, count) => {
+//   if (count === achievements.length) {
+//     addManyContentTags(tags);
+//   }
+// })
 
 app.listen(3000, () => {
     console.log('listening on 3000!')
