@@ -6,10 +6,12 @@ import graphRoutes from './routes/graph-routes';
 import userRoutes from './routes/user-routes';
 import contentRoutes from './routes/content-routes';
 import tagRoutes from './routes/tag-routes';
+import achievementRoutes from './routes/achievement-routes';
 import objectiveRoutes from './routes/objective-routes';
 import { addManyContentTags } from './controllers/tag-controller';
 import tags from './enums/tags';
-import achievements from './enums/achievements';
+import { addManyAchievements } from './controllers/achievement-controller';
+import { achievementObjects } from './enums/achievements';
 
 config();
 const app = express();
@@ -42,19 +44,20 @@ app.use('/user', userRoutes);
 app.use('/content', contentRoutes);
 app.use('/tag', tagRoutes)
 app.use('/objective', objectiveRoutes)
+app.use('/achievement', achievementRoutes)
 
 // If tags collection does not match tags enum then add them
 db.collections.tags.countDocuments((err, count) => {
-  if (count === tags.length) {
+  if (count < tags.length) {
     addManyContentTags(tags);
   }
 })
 
-// db.collections.rewards.countDocuments((err, count) => {
-//   if (count === achievements.length) {
-//     addManyContentTags(tags);
-//   }
-// })
+db.collections.achievements.countDocuments((err, count) => {
+  if (count < achievementObjects.length) {
+    addManyAchievements(achievementObjects);
+  }
+})
 
 app.listen(3000, () => {
     console.log('listening on 3000!')

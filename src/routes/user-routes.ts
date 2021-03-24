@@ -3,8 +3,9 @@ import { Router } from 'express'
 import { body, validationResult } from 'express-validator';
 import { getHashedPassword, getUserFromDatabase, getUserGraphProgressionFromDatabase,
         getUserInfoFromDatabase, hasExistingUsername, saveUserToDatabase, 
-         hasLikedContent, addLikedContent, removeLikedContent } from '../controllers/user-controller';
+         hasLikedContent, addLikedContent, removeLikedContent, addImage } from '../controllers/user-controller';
 import { decerementContentScore, incrementContentScore } from '../controllers/content-controller';
+import { getCompletedNodeCount } from '../utils/achievements';
 
 const router = Router();
 
@@ -58,7 +59,9 @@ router.get('/:id/userinfo', (req, res) => {
             res.json({ error: "cannot find user" });
             res.status(400)
         } else {
-            res.json({ username: user.username, graphs_created: user.graphs_created, likedContent: user.likedContent });
+            const completedNodeCount = getCompletedNodeCount(user)
+            res.json({ username: user.username, graphs_created: user.graphs_created, likedContent: user.likedContent, 
+                    achievements: user.achievements, badges: user.badges, completedNodeCount, graphs_progressing: user.graphs_progressing});
             res.status(200)
         }
     })
@@ -109,6 +112,30 @@ router.post('/content', (req, res) => {
             })
         }
     }))
+})
+
+router.post('/image', (req, res) => {
+    const { userId, image } = req.body;
+    
+    addImage(userId, image).then((updated) => {
+        res.json({ success: true });
+        res.status(200)
+    }).catch((e) => {
+        res.json({error: e}),
+        res.status(400)
+    })
+})
+
+router.get('/:userId/image', (req, res) => {
+    const { userId } = req.params;
+    
+    getUserInfoFromDatabase(userId).then((user) => {
+        res.json({ image: user.image });
+        res.status(200)
+    }).catch((e) => {
+        res.json({error: e}),
+        res.status(400)
+    })
 })
 
 export default router;

@@ -18,6 +18,10 @@ export const getGraphFromDatabase = async (id: string) => {
     return await graphModel.findById(id).exec();
 }
 
+export const getGraphsFromDatabase = async (ids) => {
+    return await graphModel.find({_id: {$in: ids}})
+}
+
 export const getGraphViewsFromDatabase = async (name, tags, page, pageSize) => {
     if (tags.length > 0) {
         return await graphModel.find({name: new RegExp(name), tags: {$in: [...tags]}}).skip((page-1) * pageSize).limit(pageSize);

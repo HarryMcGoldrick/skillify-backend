@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 import { Schema } from 'mongoose';
+import  { achievementSchema, badgeSchema } from './reward-schema';
 
 //ToDo change casing to pascal
 export const graphs_progressing = new Schema({
@@ -12,6 +13,9 @@ export const userSchema = new Schema({
     password: String, // Password will be hashed
     graphs_created: Array,
     graphs_progressing: [graphs_progressing],
-    likedContent: [ObjectId]
+    likedContent: [ObjectId],
+    achievements: [String],
+    badges: [badgeSchema],
+    image: String
 })
 

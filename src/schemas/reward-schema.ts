@@ -1,20 +1,15 @@
 import { Schema } from "mongoose";
 
-const badgeSchema = new Schema({
+export const badgeSchema = new Schema({
+    type: String,
     name: String,
     color: String,
 })
 
-const achievementSchema = new Schema({
-    name: String,
+export const achievementSchema = new Schema({
     type: String,
+    name: String,
     goal: String,
     rewardBadge: badgeSchema,
     image: String,
-})
-
-export const userAchievementSchema = new Schema({
-    userId: Schema.Types.ObjectId,
-    achievements: [achievementSchema],
-    badges: [badgeSchema]
 })

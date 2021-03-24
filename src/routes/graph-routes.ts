@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getGraphFromDatabase, createNewGraph, updateGraphInDatabase, getGraphViewsFromDatabase, getGraphViewsCount, createImageFromGraphData, updateGraphStyleSheetInDatabase } from '../controllers/graph-controller';
+import { getGraphFromDatabase, createNewGraph, updateGraphInDatabase, getGraphViewsFromDatabase, getGraphViewsCount, createImageFromGraphData, updateGraphStyleSheetInDatabase, getGraphsFromDatabase } from '../controllers/graph-controller';
 import { body, param, validationResult } from 'express-validator';
 import { authenticateToken } from '../utils/authentication';
 import { addGraphToUserCreated, addGraphToUserProgress, addNodeToUserProgress, getUserFromDatabase, removeGraphFromUserProgress, removeNodeFromUserProgress } from '../controllers/user-controller';
@@ -22,6 +22,18 @@ router.get('/views', async (req, res) => {
   })
 
   res.json({graphViews, graphAmount});
+});
+
+router.post('/views', async (req, res) => {
+  const { graphIds } = req.body;
+  const graphs: any = await getGraphsFromDatabase(graphIds)
+
+  const graphViews = graphs.map((graph: any) => {
+    const { id, name, description, createdById, image, tags } = graph
+    return { id, name, description, createdById, image, tags }
+  })
+
+  res.json({graphViews});
 });
 
 router.post('/create', [body('name').exists(), body('description').exists(), body('userId').exists(), authenticateToken], async (req, res) => {

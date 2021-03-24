@@ -65,3 +65,15 @@ export const removeLikedContent = async (userId: string, contentId: string): Pro
 export const addLikedContent = async (userId: string, contentId: string): Promise<any> => {
     return  userModel.updateOne({ _id: new ObjectId(userId)}, { $push: { 'likedContent': new ObjectId(contentId)}})
 }
+
+export const addAchievement = async (userId: string, achievement: any): Promise<any> => {
+    return userModel.updateOne({ _id: new ObjectId(userId)}, { $push: { 'achievements': achievement}})
+}
+
+export const addBadge = async (userId: string, badge: any): Promise<any> => {
+    return userModel.updateOne({ _id: new ObjectId(userId)}, { $push: { 'badges': badge}})
+}
+
+export const addImage = async (userId: string, image: string): Promise<any> => {
+    return userModel.updateOne({ _id: new ObjectId(userId)}, { $set: { 'image': image}})
+}
