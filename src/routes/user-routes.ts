@@ -76,11 +76,12 @@ router.post('/progress', (req, res) => {
             res.json({ error: "cannot find user" });
             res.status(400)
         } else {
-            const completedNodes = user.graphs_progressing.map(graph => {
+            const filteredGraphs = user.graphs_progressing.filter(graph => {
                 if (graph._id.toString() === graphId) {
-                    return graph.completedNodes
+                    return true
                 }
             })[0]
+            const { completedNodes } = filteredGraphs
             res.json({completedNodes});
             res.status(200)
         }

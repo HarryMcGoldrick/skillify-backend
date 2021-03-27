@@ -31,7 +31,7 @@ export const addGraphToUserCreated = async (graphId: string, userId: string): Pr
 }
 
 export const addGraphToUserProgress = async (graphId: string, userId: string): Promise<any> => {
-    return userModel.findByIdAndUpdate({ _id: new ObjectId(userId) }, { $push: { graphs_progressing: { _id: new ObjectId(graphId) } } });
+    return userModel.updateOne({ _id: new ObjectId(userId) }, { $push: { graphs_progressing: { _id: new ObjectId(graphId) } } });
 }
 
 export const addNodeToUserProgress = async (userId: string, graphId: string, nodeId: string): Promise<any> => {

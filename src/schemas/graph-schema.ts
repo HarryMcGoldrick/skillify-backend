@@ -8,7 +8,8 @@ export const nodeSchema = new Schema({
         label: String,
         description: String,
         completed: Boolean,
-        content: [contentSchema]
+        content: [contentSchema],
+        type: Schema.Types.Mixed,
     },
     position: {
         x: Number,

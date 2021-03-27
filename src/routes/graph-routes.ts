@@ -52,7 +52,8 @@ router.post('/create', [body('name').exists(), body('description').exists(), bod
 router.post('/progress', authenticateToken, async (req, res) => {
   const { graphId, userId } = req.body;
   const response = await addGraphToUserProgress(graphId, userId);
-  if (response) {
+
+  if (response.nModified === 1) {
     res.json({ res: true });
     res.status(200)
   } else {
@@ -76,7 +77,7 @@ router.post('/progress/remove', authenticateToken, async (req, res) => {
 router.post('/progress/node', authenticateToken, async (req, res) => {
   const { graphId, userId, nodeId } = req.body;
   const response = await addNodeToUserProgress(userId, graphId, nodeId);
-  if (response) {
+  if (response.nModified === 1) {
     res.json({ res: true });
     res.status(200)
   } else {
