@@ -18,9 +18,9 @@
       "node_modules",
     ],
     "include": [
-      "**/*.ts",
+      "**/*.ts", "src/db.js",
     ],
     "files": [
-      "src/app.ts"
+      "src/server.ts"
     ]
 }
