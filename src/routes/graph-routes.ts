@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getGraphFromDatabase, createNewGraph, updateGraphInDatabase, getGraphViewsFromDatabase, getGraphViewsCount, createImageFromGraphData, updateGraphStyleSheetInDatabase, getGraphsFromDatabase } from '../controllers/graph-controller';
+import { getGraphFromDatabase, createNewGraph, updateGraphInDatabase, getGraphViewsFromDatabase, getGraphViewsCount, createImageFromGraphData, updateGraphStyleSheetInDatabase, getGraphsFromDatabase, updateGraphPrivacy } from '../controllers/graph-controller';
 import { body, param, validationResult } from 'express-validator';
 import { authenticateToken } from '../utils/authentication';
 import { addGraphToUserCreated, addGraphToUserProgress, addNodeToUserProgress, getUserFromDatabase, removeGraphFromUserProgress, removeNodeFromUserProgress } from '../controllers/user-controller';
@@ -17,8 +17,8 @@ router.get('/views', async (req, res) => {
 
   // Remove the unnecessary fields
   const graphViews = graphs.map((graph: any) => {
-    const { id, name, description, createdById, image, tags } = graph
-    return { id, name, description, createdById, image, tags }
+    const { id, name, description, createdById, image, tags, private: privacy } = graph
+    return { id, name, description, createdById, image, tags, private: privacy}
   })
 
   res.json({graphViews, graphAmount});
@@ -100,12 +100,13 @@ router.post('/progress/node/remove', authenticateToken, async (req, res) => {
 
 router.get('/:id', [param('id').isAlphanumeric()], async (req, res) => {
   const graph: any = await getGraphFromDatabase(req.params.id);
-  const {name, description, nodes, edges } = graph;
+  const {name, description, nodes, edges, private: privacy } = graph;
   const dataToReturn = {
     name,
     nodes,
     description,
     edges,
+    private: privacy,
   }
   res.json({ graph: dataToReturn });
   res.status(200)
@@ -140,6 +141,19 @@ router.post('/:id/image', [param('id').isAlphanumeric(), authenticateToken], asy
   const response = createImageFromGraphData(req.params.id, req.body.elements);
   res.json({ res: response });
   res.status(200)
+})
+
+router.post('/:id/privacy', [param('id').isAlphanumeric(), authenticateToken], async (req , res) => {
+  const { id: graphId } = req.params;
+  const { privacy } = req.body;
+  console.log(graphId);
+  updateGraphPrivacy(graphId, privacy).then(() => {
+      res.json({ success: true });
+      res.status(200)
+  }).catch((e) => {
+      res.json({error: e}),
+      res.status(400)
+  })
 })
 
 

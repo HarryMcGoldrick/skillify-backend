@@ -79,3 +79,7 @@ export const createImageFromGraphData = (id: string, elements: any) => {
     });
 }
 
+export const updateGraphPrivacy = (graphId: string, privacy: boolean) => {
+    return graphModel.updateOne({ _id: new ObjectId(graphId)}, {$set: {'private': privacy}});
+}
+

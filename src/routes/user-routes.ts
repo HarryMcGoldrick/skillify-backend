@@ -3,7 +3,8 @@ import { Router } from 'express'
 import { body, validationResult } from 'express-validator';
 import { getHashedPassword, getUserFromDatabase, getUserGraphProgressionFromDatabase,
         getUserInfoFromDatabase, hasExistingUsername, saveUserToDatabase, 
-         hasLikedContent, addLikedContent, removeLikedContent, addImage } from '../controllers/user-controller';
+         hasLikedContent, addLikedContent, removeLikedContent, addImage, updateUserPrivacy,
+         getUserInfoFromDatabaseByUsername } from '../controllers/user-controller';
 import { decerementContentScore, incrementContentScore } from '../controllers/content-controller';
 import { getCompletedNodeCount } from '../utils/achievements';
 
@@ -68,6 +69,23 @@ router.get('/:id/userinfo', (req, res) => {
 
 });
 
+router.post('/userinfo', (req, res) => {
+    const { username } = req.body;
+
+    getUserInfoFromDatabaseByUsername(username).then((user) => {
+        if (!user) {
+            res.json({ error: "cannot find user" });
+            res.status(400)
+        } else {
+            const completedNodeCount = getCompletedNodeCount(user)
+            res.json({ userId: user._id, username: user.username, graphs_created: user.graphs_created, likedContent: user.likedContent, 
+                    achievements: user.achievements, badges: user.badges, completedNodeCount, graphs_progressing: user.graphs_progressing,
+                    private: user.private});
+            res.status(200)
+        }
+    })
+})
+
 router.post('/progress', (req, res) => {
     const { userId, graphId } = req.body;
 
@@ -116,10 +134,26 @@ router.post('/content', (req, res) => {
 })
 
 router.post('/image', (req, res) => {
-    const { userId, image } = req.body;
+    const { username, image } = req.body;
     
-    addImage(userId, image).then((updated) => {
-        res.json({ success: true });
+    addImage(username, image).then((updated) => {
+        if (updated.nModified === 1) {
+            res.json({ success: true });
+            res.status(200)
+        }
+    }).catch((e) => {
+        res.json({error: e}),
+        res.status(400)
+    })
+})
+
+router.get('/:username/image', (req, res) => {
+    const { username } = req.params;
+    console.log(username)
+    
+    getUserInfoFromDatabaseByUsername(username).then((user) => {
+        console.log(user);
+        res.json({ image: user.image });
         res.status(200)
     }).catch((e) => {
         res.json({error: e}),
@@ -127,11 +161,11 @@ router.post('/image', (req, res) => {
     })
 })
 
-router.get('/:userId/image', (req, res) => {
-    const { userId } = req.params;
+router.post('/privacy', (req , res) => {
+    const { userId, privacy } = req.body;
     
-    getUserInfoFromDatabase(userId).then((user) => {
-        res.json({ image: user.image });
+    updateUserPrivacy(userId, privacy).then(() => {
+        res.json({ success: true });
         res.status(200)
     }).catch((e) => {
         res.json({error: e}),

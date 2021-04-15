@@ -22,6 +22,11 @@ export const hasExistingUsername = async (username: string): Promise<boolean> =>
     return userModel.exists({ username });
 }
 
+export const getUserInfoFromDatabaseByUsername = async (username: string): Promise<any> => {
+    return userModel.findOne({ username: username });
+}
+
+
 export const getUserFromDatabase = async (username: string, password: string): Promise<any> => {
     return userModel.findOne({ username, password });
 }
@@ -74,6 +79,10 @@ export const addBadge = async (userId: string, badge: any): Promise<any> => {
     return userModel.updateOne({ _id: new ObjectId(userId)}, { $push: { 'badges': badge}})
 }
 
-export const addImage = async (userId: string, image: string): Promise<any> => {
-    return userModel.updateOne({ _id: new ObjectId(userId)}, { $set: { 'image': image}})
+export const addImage = async (username: string, image: string): Promise<any> => {
+    return userModel.updateOne({ username: username}, { $set: { 'image': image}})
+}
+
+export const updateUserPrivacy = async (userId: string, privacy: boolean): Promise<any> => {
+    return userModel.updateOne({ _id: new ObjectId(userId)}, {$set : { 'private': privacy}})
 }

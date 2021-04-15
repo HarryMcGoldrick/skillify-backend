@@ -43,4 +43,5 @@ export const graphSchema = new Schema({
     edges: [edgeSchema],
     styleSheet: [style],
     tags: [String],
+    private: Boolean,
 })

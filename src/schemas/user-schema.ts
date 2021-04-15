@@ -16,6 +16,7 @@ export const userSchema = new Schema({
     likedContent: [ObjectId],
     achievements: [String],
     badges: [badgeSchema],
-    image: String
+    image: String,
+    private: Boolean
 })
 
