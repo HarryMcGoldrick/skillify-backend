@@ -177,10 +177,8 @@ router.post('/image', (req, res) => {
 
 router.get('/:username/image', (req, res) => {
     const { username } = req.params;
-    console.log(username)
     
     getUserInfoFromDatabaseByUsername(username).then((user) => {
-        console.log(user);
         res.json({ image: user.image });
         res.status(200)
     }).catch((e) => {
