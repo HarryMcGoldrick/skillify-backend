@@ -83,3 +83,10 @@ export const updateGraphPrivacy = (graphId: string, privacy: boolean) => {
     return graphModel.updateOne({ _id: new ObjectId(graphId)}, {$set: {'private': privacy}});
 }
 
+export const incrementGraphScore = async (contentId: string) => {
+    return await graphModel.updateOne({_id: new ObjectId(contentId)}, {$inc: {score: +1}})
+}
+
+export const decerementGraphScore = async (contentId: string) => {
+  return await graphModel.updateOne({_id: new ObjectId(contentId)}, {$inc: {score: -1}})
+}

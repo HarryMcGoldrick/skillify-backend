@@ -17,8 +17,8 @@ router.get('/views', async (req, res) => {
 
   // Remove the unnecessary fields
   const graphViews = graphs.map((graph: any) => {
-    const { id, name, description, createdById, image, tags, private: privacy } = graph
-    return { id, name, description, createdById, image, tags, private: privacy}
+    const { id, name, description, createdById, image, tags, private: privacy, score } = graph
+    return { id, name, description, createdById, image, tags, private: privacy, score}
   })
 
   res.json({graphViews, graphAmount});
@@ -146,7 +146,6 @@ router.post('/:id/image', [param('id').isAlphanumeric(), authenticateToken], asy
 router.post('/:id/privacy', [param('id').isAlphanumeric(), authenticateToken], async (req , res) => {
   const { id: graphId } = req.params;
   const { privacy } = req.body;
-  console.log(graphId);
   updateGraphPrivacy(graphId, privacy).then(() => {
       res.json({ success: true });
       res.status(200)

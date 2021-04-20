@@ -44,4 +44,5 @@ export const graphSchema = new Schema({
     styleSheet: [style],
     tags: [String],
     private: Boolean,
+    score: Number,
 })

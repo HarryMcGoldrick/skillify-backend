@@ -14,6 +14,7 @@ export const userSchema = new Schema({
     graphs_created: Array,
     graphs_progressing: [graphs_progressing],
     likedContent: [ObjectId],
+    likedGraphs: [ObjectId],
     achievements: [String],
     badges: [badgeSchema],
     image: String,

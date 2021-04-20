@@ -63,12 +63,24 @@ export const hasLikedContent = async (userId: string, contentId: string): Promis
     return  userModel.exists({ _id: new ObjectId(userId), likedContent: new ObjectId(contentId)})
 }
 
+export const hasLikedGraph = async (userId: string, graphId: string): Promise<any> => {
+    return  userModel.exists({ _id: new ObjectId(userId), likedGraphs: new ObjectId(graphId)})
+}
+
 export const removeLikedContent = async (userId: string, contentId: string): Promise<any> => {
     return  userModel.updateOne({ _id: new ObjectId(userId), 'likedContent': new ObjectId(contentId)}, { $pull: { 'likedContent': new ObjectId(contentId)}})
 }
 
 export const addLikedContent = async (userId: string, contentId: string): Promise<any> => {
     return  userModel.updateOne({ _id: new ObjectId(userId)}, { $push: { 'likedContent': new ObjectId(contentId)}})
+}
+
+export const removeLikedGraph = async (userId: string, graphId: string): Promise<any> => {
+    return  userModel.updateOne({ _id: new ObjectId(userId), 'likedGraphs': new ObjectId(graphId)}, { $pull: { 'likedGraphs': new ObjectId(graphId)}})
+}
+
+export const addLikedGraph = async (userId: string, graphId: string): Promise<any> => {
+    return  userModel.updateOne({ _id: new ObjectId(userId)}, { $push: { 'likedGraphs': new ObjectId(graphId)}})
 }
 
 export const addAchievement = async (userId: string, achievement: any): Promise<any> => {

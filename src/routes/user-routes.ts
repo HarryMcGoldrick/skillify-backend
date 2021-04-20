@@ -4,9 +4,10 @@ import { body, validationResult } from 'express-validator';
 import { getHashedPassword, getUserFromDatabase, getUserGraphProgressionFromDatabase,
         getUserInfoFromDatabase, hasExistingUsername, saveUserToDatabase, 
          hasLikedContent, addLikedContent, removeLikedContent, addImage, updateUserPrivacy,
-         getUserInfoFromDatabaseByUsername } from '../controllers/user-controller';
+         getUserInfoFromDatabaseByUsername, addLikedGraph, removeLikedGraph, hasLikedGraph } from '../controllers/user-controller';
 import { decerementContentScore, incrementContentScore } from '../controllers/content-controller';
 import { getCompletedNodeCount } from '../utils/achievements';
+import { decerementGraphScore, incrementGraphScore } from '../controllers/graph-controller';
 
 const router = Router();
 
@@ -62,7 +63,8 @@ router.get('/:id/userinfo', (req, res) => {
         } else {
             const completedNodeCount = getCompletedNodeCount(user)
             res.json({ username: user.username, graphs_created: user.graphs_created, likedContent: user.likedContent, 
-                    achievements: user.achievements, badges: user.badges, completedNodeCount, graphs_progressing: user.graphs_progressing});
+                    achievements: user.achievements, badges: user.badges, completedNodeCount, graphs_progressing: user.graphs_progressing,
+                    likedGraphs: user.likedGraphs});
             res.status(200)
         }
     })
@@ -107,7 +109,7 @@ router.post('/progress', (req, res) => {
 })
 
 
-router.post('/content', (req, res) => {
+router.post('/like/content', (req, res) => {
     const { userId, contentId} = req.body;
     
     hasLikedContent(userId, contentId).then((exists => {
@@ -123,6 +125,32 @@ router.post('/content', (req, res) => {
         } else {
             decerementContentScore(contentId);
             removeLikedContent(userId, contentId).then((updated) => {
+                res.json({ updated, type: 'remove' });
+                res.status(200)
+            }).catch((e) => {
+                res.json({error: e}),
+                res.status(400)
+            })
+        }
+    }))
+})
+
+router.post('/like/graph', (req, res) => {
+    const { userId, graphId } = req.body;
+    
+    hasLikedGraph(userId, graphId).then((exists => {
+        if (!exists) {
+            incrementGraphScore(graphId);
+            addLikedGraph(userId, graphId).then((updated) => {
+                res.json({ updated, type: 'add' });
+                res.status(200)
+            }).catch((e) => {
+                res.json({error: e}),
+                res.status(400)
+            })
+        } else {
+            decerementGraphScore(graphId);
+            removeLikedGraph(userId, graphId).then((updated) => {
                 res.json({ updated, type: 'remove' });
                 res.status(200)
             }).catch((e) => {
