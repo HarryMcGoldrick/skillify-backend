@@ -2,11 +2,7 @@ import { objectiveSchema } from '../schemas/objective-schema';
 import { model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 
-
-
-
 const objectiveModel = model('objective', objectiveSchema);
-
 
 export const hasExistingObjectives = async (userId: string, nodeId: string): Promise<any> => {
     return objectiveModel.exists({ userId: new ObjectId(userId), nodeId: nodeId})

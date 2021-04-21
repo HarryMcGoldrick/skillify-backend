@@ -19,8 +19,6 @@ router.get('/:userId/:nodeId', (req, res) => {
 
 router.post('/', (req, res) => {
     const {userId, nodeId, items} = req.body;
-
-
     hasExistingObjectives(userId, nodeId).then((exists => {
         if (!exists) {
             addNodeObjectives(userId, nodeId, items).then((updated) => {

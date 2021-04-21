@@ -20,7 +20,7 @@ router.get('/views', async (req, res) => {
     const { id, name, description, createdById, image, tags, private: privacy, score } = graph
     return { id, name, description, createdById, image, tags, private: privacy, score}
   })
-
+  
   res.json({graphViews, graphAmount});
 });
 
@@ -44,21 +44,20 @@ router.post('/create', [body('name').exists(), body('description').exists(), bod
   const { userId, name, description, tags } = req.body;
   const graphId = createNewGraph(name, description, userId, tags);
   await addGraphToUserCreated(graphId, userId);
-  res.json({ graphId });
   res.status(200)
+  res.json({ graphId });
 });
 
 //TODO add validation to prevent same graph being added twice
 router.post('/progress', authenticateToken, async (req, res) => {
   const { graphId, userId } = req.body;
   const response = await addGraphToUserProgress(graphId, userId);
-
   if (response.nModified === 1) {
+    res.status(200);
     res.json({ res: true });
-    res.status(200)
   } else {
+    res.status(400);
     res.json({ res: false });
-    res.status(400)
   }
 })
 
@@ -66,11 +65,11 @@ router.post('/progress/remove', authenticateToken, async (req, res) => {
   const { graphId, userId } = req.body;
   const response = await removeGraphFromUserProgress(graphId, userId);
   if (response) {
-    res.json({ res: true });
     res.status(200)
+    res.json({ res: true });
   } else {
-    res.json({ res: false });
     res.status(400)
+    res.json({ res: false });
   }
 })
 
@@ -78,23 +77,23 @@ router.post('/progress/node', authenticateToken, async (req, res) => {
   const { graphId, userId, nodeId } = req.body;
   const response = await addNodeToUserProgress(userId, graphId, nodeId);
   if (response.nModified === 1) {
-    res.json({ res: true });
     res.status(200)
+    res.json({ res: true });
   } else {
-    res.json({ res: false });
     res.status(400)
+    res.json({ res: false });
   }
 })
 
 router.post('/progress/node/remove', authenticateToken, async (req, res) => {
   const { graphId, userId, nodeId } = req.body;
   const response = await removeNodeFromUserProgress(userId, graphId, nodeId);
-  if (response) {
-    res.json({ res: true });
+  if (response.nModified) {
     res.status(200)
+    res.json({ res: true });
   } else {
-    res.json({ res: false });
     res.status(400)
+    res.json({ res: false });
   }
 })
 

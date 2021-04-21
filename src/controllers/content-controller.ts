@@ -9,7 +9,7 @@ export const getYoutubeVideosRelated = (label) => {
     return youtubeRelatedSearch(label);
 }
 
-export const addContent = async (nodeId: string, content: any) => {
+export const addContent = (nodeId: string, content: any) => {
     const contentInstance = new contentModel({ nodeId, ...content });
     contentInstance.save()
     return contentInstance._id.toString();

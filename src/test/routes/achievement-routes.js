@@ -1,12 +1,16 @@
-process.env.NODE_ENV = 'test'
 const expect = require('chai').expect;
 const request = require('supertest');
 const app = require('../../app.ts');
-const mongoose = require('mongoose');
-const MongoMemoryServer = require('mongodb-memory-server').MongoMemoryServer;
 
 const achievementController = require('../../controllers/achievement-controller');
-let mongoServer;
+const userController = require('../../controllers/user-controller');
+
+const baseUrl = '/achievement'
+let dummyUserId;
+
+before(async () => {
+  dummyUserId = userController.saveUserToDatabase('graphTest', 'graphTest');
+});
 
 const dummyAchievement = {
     type: 'Dummy Reward',
@@ -21,22 +25,12 @@ const dummyAchievement = {
 };
 
 before(async () => {
-  mongoServer = new MongoMemoryServer();
-  const mongoUri = await mongoServer.getUri();
-  await mongoose.connect(mongoUri,  { useNewUrlParser: true,  useUnifiedTopology: true });
   await achievementController.addManyAchievements([dummyAchievement]);
 });
 
-after(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
-});
-
-
-
 describe('Achievements', () => {
     it('Get Achievements', (done) => {
-        request(app).get('/achievement')
+        request(app).get(baseUrl)
         .send({})
         .then((res) => {
             const achievement = res.body[0];
@@ -46,4 +40,25 @@ describe('Achievements', () => {
         })
     })
 
+    it('Get Achievements By Name', (done) => {
+        request(app).post(`${baseUrl}/objects`)
+        .send({achievementNames: [dummyAchievement.name]})
+        .then((res) => {
+            const achievement = res.body[0];
+            expect(achievement.type).equal(dummyAchievement.type)
+            expect(res.status).equal(200);
+            done();
+        })
+    })
+
+    it('Poll User Achievements', (done) => {
+        request(app).get(`${baseUrl}/poll/${dummyUserId}`)
+        .send({})
+        .then((res) => {
+            const achievementsAdded = res.body;
+            expect(achievementsAdded).length(0)
+            expect(res.status).equal(200);
+            done();
+        })
+    })
 })

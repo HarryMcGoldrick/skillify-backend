@@ -1,3 +1,5 @@
+// Dont run test coverage for Utils
+/* istanbul ignore file */
 import { addAchievement, addBadge, getUserInfoFromDatabase } from '../controllers/user-controller';
 import { achievements, badges } from '../enums/achievements';
 

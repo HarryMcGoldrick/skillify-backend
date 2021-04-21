@@ -1,3 +1,5 @@
+// Dont run test coverage for external services
+/* istanbul ignore file */
 import axios from 'axios';
 
 export const googleBooksRelatedSearch = async (searchQuery: any) => {

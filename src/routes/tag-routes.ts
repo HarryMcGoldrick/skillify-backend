@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
         })
         res.json({ tags })
     } else {
-        res.json({ response })
+        res.json({ tags: response })
     }
 })
 

@@ -21,12 +21,12 @@ router.post('/register', [body('username').exists(), body('password').exists()],
     const hashedPassword = getHashedPassword(password);
     hasExistingUsername(username).then((exists) => {
         if (exists) {
-            res.json({ error: "username already exists" });
             res.status(200)
+            res.json({ error: "username already exists" });
         } else {
             const id = saveUserToDatabase(username, hashedPassword);
-            res.json({ userId: id });
             res.status(200)
+            res.json({ userId: id });
         }
     });
 });
@@ -41,12 +41,12 @@ router.post('/login', [body('username').exists(), body('password').exists()], (r
     const hashedPassword = getHashedPassword(password);
     getUserFromDatabase(username, hashedPassword).then((user) => {
         if (!user) {
-            res.json({ error: "cannot find user" });
             res.status(400)
+            res.json({ error: "cannot find user" });
         } else {
             const token = generateJWT(user._id, user.username).toString()
-            res.json({ token });
             res.status(200)
+            res.json({ token });
         }
     })
 
@@ -58,14 +58,14 @@ router.get('/:id/userinfo', (req, res) => {
 
     getUserInfoFromDatabase(userId).then((user) => {
         if (!user) {
-            res.json({ error: "cannot find user" });
             res.status(400)
+            res.json({ error: "cannot find user" });
         } else {
             const completedNodeCount = getCompletedNodeCount(user)
+            res.status(200)
             res.json({ username: user.username, graphs_created: user.graphs_created, likedContent: user.likedContent, 
                     achievements: user.achievements, badges: user.badges, completedNodeCount, graphs_progressing: user.graphs_progressing,
                     likedGraphs: user.likedGraphs});
-            res.status(200)
         }
     })
 
@@ -76,14 +76,14 @@ router.post('/userinfo', (req, res) => {
 
     getUserInfoFromDatabaseByUsername(username).then((user) => {
         if (!user) {
-            res.json({ error: "cannot find user" });
             res.status(400)
+            res.json({ error: "cannot find user" });
         } else {
             const completedNodeCount = getCompletedNodeCount(user)
+            res.status(200)
             res.json({ userId: user._id, username: user.username, graphs_created: user.graphs_created, likedContent: user.likedContent, 
                     achievements: user.achievements, badges: user.badges, completedNodeCount, graphs_progressing: user.graphs_progressing,
                     private: user.private});
-            res.status(200)
         }
     })
 })
@@ -93,17 +93,17 @@ router.post('/progress', (req, res) => {
 
     getUserGraphProgressionFromDatabase(userId, graphId).then((user => {
         if (!user) {
+            res.status(400);
             res.json({ error: "cannot find user" });
-            res.status(400)
         } else {
             const filteredGraphs = user.graphs_progressing.filter(graph => {
                 if (graph._id.toString() === graphId) {
                     return true
                 }
             })[0]
-            const { completedNodes } = filteredGraphs
+            const completedNodes = filteredGraphs ? filteredGraphs.completedNodes : []
+            res.status(200);
             res.json({completedNodes});
-            res.status(200)
         }
     }))
 })
@@ -111,25 +111,25 @@ router.post('/progress', (req, res) => {
 
 router.post('/like/content', (req, res) => {
     const { userId, contentId} = req.body;
-    
     hasLikedContent(userId, contentId).then((exists => {
         if (!exists) {
             incrementContentScore(contentId);
             addLikedContent(userId, contentId).then((updated) => {
+                res.status(200);
                 res.json({ updated, type: 'add' });
-                res.status(200)
             }).catch((e) => {
-                res.json({error: e}),
-                res.status(400)
+                res.status(400);
+                res.json({error: e});
             })
         } else {
             decerementContentScore(contentId);
             removeLikedContent(userId, contentId).then((updated) => {
+                res.status(200);
                 res.json({ updated, type: 'remove' });
-                res.status(200)
             }).catch((e) => {
-                res.json({error: e}),
-                res.status(400)
+
+                res.status(400);
+                res.json({error: e});
             })
         }
     }))
@@ -137,25 +137,24 @@ router.post('/like/content', (req, res) => {
 
 router.post('/like/graph', (req, res) => {
     const { userId, graphId } = req.body;
-    
     hasLikedGraph(userId, graphId).then((exists => {
         if (!exists) {
             incrementGraphScore(graphId);
             addLikedGraph(userId, graphId).then((updated) => {
+                res.status(200);
                 res.json({ updated, type: 'add' });
-                res.status(200)
             }).catch((e) => {
-                res.json({error: e}),
-                res.status(400)
+                res.status(400);
+                res.json({error: e});
             })
         } else {
             decerementGraphScore(graphId);
             removeLikedGraph(userId, graphId).then((updated) => {
+                res.status(200);
                 res.json({ updated, type: 'remove' });
-                res.status(200)
             }).catch((e) => {
-                res.json({error: e}),
-                res.status(400)
+                res.status(400);
+                res.json({error: e});
             })
         }
     }))
@@ -166,12 +165,12 @@ router.post('/image', (req, res) => {
     
     addImage(username, image).then((updated) => {
         if (updated.nModified === 1) {
+            res.status(200);
             res.json({ success: true });
-            res.status(200)
         }
     }).catch((e) => {
-        res.json({error: e}),
-        res.status(400)
+        res.status(400);
+        res.json({error: e});
     })
 })
 
@@ -179,11 +178,11 @@ router.get('/:username/image', (req, res) => {
     const { username } = req.params;
     
     getUserInfoFromDatabaseByUsername(username).then((user) => {
+        res.status(200);
         res.json({ image: user.image });
-        res.status(200)
     }).catch((e) => {
-        res.json({error: e}),
-        res.status(400)
+        res.status(400);
+        res.json({error: e});
     })
 })
 
@@ -191,11 +190,11 @@ router.post('/privacy', (req , res) => {
     const { userId, privacy } = req.body;
     
     updateUserPrivacy(userId, privacy).then(() => {
+        res.status(200);
         res.json({ success: true });
-        res.status(200)
     }).catch((e) => {
-        res.json({error: e}),
-        res.status(400)
+        res.status(400);
+        res.json({error: e});
     })
 })
 

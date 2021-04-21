@@ -1,3 +1,5 @@
+// Dont run test coverage for Utils
+/* istanbul ignore file */
 export function toDataURL(url, callback) {
     var xhr = new XMLHttpRequest();
     xhr.onload = function() {
