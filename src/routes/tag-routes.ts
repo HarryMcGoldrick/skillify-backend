@@ -3,6 +3,7 @@ import { Router } from 'express';
 
 const router = Router();
 
+// returns a full list of tags
 router.get('/', async (req, res) => {
     const response = await getContentTags();
     if (response.length > 0) {
@@ -15,6 +16,7 @@ router.get('/', async (req, res) => {
     }
 })
 
+// Adds a new tag
 router.post('/', async (req, res) => {
     const { tag } = req.body;
     const response = await addContentTag(tag);
@@ -22,12 +24,14 @@ router.post('/', async (req, res) => {
 
 })
 
+// Adds many tags
 router.post('/many', async (req, res) => {
     const { tagArray } = req.body;
     const response = await addManyContentTags(tagArray);
     res.json({ response })
 })
 
+// Deltes a given tag from the database
 router.delete('/', async (req, res) => {
     const { tag } = req.body;
     const response = await deleteTag(tag);

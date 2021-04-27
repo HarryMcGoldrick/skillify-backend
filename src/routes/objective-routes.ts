@@ -3,6 +3,7 @@ import { Router } from 'express';
 
 const router = Router();
 
+// Returns a list of objectives for a user and node Id
 router.get('/:userId/:nodeId', (req, res) => {
     const {userId, nodeId} = req.params;
 
@@ -17,6 +18,7 @@ router.get('/:userId/:nodeId', (req, res) => {
     })
 })
 
+// Updates the current nodes objectives
 router.post('/', (req, res) => {
     const {userId, nodeId, items} = req.body;
     hasExistingObjectives(userId, nodeId).then((exists => {

@@ -3,6 +3,8 @@
 import { addAchievement, addBadge, getUserInfoFromDatabase } from '../controllers/user-controller';
 import { achievements, badges } from '../enums/achievements';
 
+
+// Checks if a user has completed achievements, returns a list of newly completed achievments
 export const checkForAchievements = async (userId) => {
     let achievementsAdded = [];
     const userInfo = await getUserInfoFromDatabase(userId)

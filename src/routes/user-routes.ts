@@ -11,6 +11,7 @@ import { decerementGraphScore, incrementGraphScore } from '../controllers/graph-
 
 const router = Router();
 
+// Registers a user and checks that the username is unique
 router.post('/register', [body('username').exists(), body('password').exists()], (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -31,6 +32,7 @@ router.post('/register', [body('username').exists(), body('password').exists()],
     });
 });
 
+// Validates the users information and returns a JWT token if valid
 router.post('/login', [body('username').exists(), body('password').exists()], (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -52,7 +54,7 @@ router.post('/login', [body('username').exists(), body('password').exists()], (r
 
 });
 
-
+// Returns the users information for a given Id
 router.get('/:id/userinfo', (req, res) => {
     const { id: userId } = req.params
 
@@ -71,6 +73,7 @@ router.get('/:id/userinfo', (req, res) => {
 
 });
 
+// Returns the users information for a given username
 router.post('/userinfo', (req, res) => {
     const { username } = req.body;
 
@@ -88,6 +91,7 @@ router.post('/userinfo', (req, res) => {
     })
 })
 
+// Retrieves the current progress for a graph
 router.post('/progress', (req, res) => {
     const { userId, graphId } = req.body;
 
@@ -108,7 +112,7 @@ router.post('/progress', (req, res) => {
     }))
 })
 
-
+// Updates the liked status of a user suggested content
 router.post('/like/content', (req, res) => {
     const { userId, contentId} = req.body;
     hasLikedContent(userId, contentId).then((exists => {
@@ -135,6 +139,7 @@ router.post('/like/content', (req, res) => {
     }))
 })
 
+// Updates the like status for a user created graph
 router.post('/like/graph', (req, res) => {
     const { userId, graphId } = req.body;
     hasLikedGraph(userId, graphId).then((exists => {
@@ -160,6 +165,7 @@ router.post('/like/graph', (req, res) => {
     }))
 })
 
+// Adds a user avatar
 router.post('/image', (req, res) => {
     const { username, image } = req.body;
     
@@ -174,6 +180,7 @@ router.post('/image', (req, res) => {
     })
 })
 
+// Get user image by username
 router.get('/:username/image', (req, res) => {
     const { username } = req.params;
     
@@ -186,6 +193,7 @@ router.get('/:username/image', (req, res) => {
     })
 })
 
+// Update the privacy setting for a user
 router.post('/privacy', (req , res) => {
     const { userId, privacy } = req.body;
     

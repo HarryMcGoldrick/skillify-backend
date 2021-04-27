@@ -31,14 +31,16 @@ router.get('/googlebooks/:id', async (req, res) => {
     res.json({response});
 })
 
+// Adds content to the database
 router.post('/', async (req, res) => {
-    const { nodeId, content}= req.body;
+    const { nodeId, content }= req.body;
 
     const response: any = await addContent(nodeId, content);
 
     res.json({response});
 })
 
+// Deletes a content given a contentId
 router.delete('/:contentId', async (req, res) => {
     const { contentId } = req.params;
     const response: any = await removeContent(contentId);
@@ -46,6 +48,7 @@ router.delete('/:contentId', async (req, res) => {
     res.json({response});
 })
 
+// Gets all related content for a node
 router.get('/:nodeId', async (req, res) => {
     const { nodeId } = req.params;
     const response: any = await getContentForNodeId(nodeId);
